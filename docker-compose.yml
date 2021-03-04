@@ -34,35 +34,32 @@ services:
 
   db-sandbox:
     container_name: db-sandbox
-    image: postgres:12
+    image: mysql:latest
     env_file: .docker/db/.env
     ports:
-      - 54321:5432
+      - 33306:3306
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - mysql-data:/var/lib/mysql
     networks:
       - default
 
-  pgadmin-sandbox:
-    container_name: pgadmin-sandbox
-    image: dpage/pgadmin4:4.27
+  phpmyadmin-sandbox:
+    container_name: phpmyadmin-sandbox
+    image: phpmyadmin/phpmyadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@toto.com
-      PGADMIN_DEFAULT_PASSWORD: toto
-      PGADMIN_LISTEN_PORT: 80
+      PMA_HOST: db-sandbox
+      PMA_USER: root
+      PMA_PASSWORD: secret
     ports:
       - "9998:80"
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
     links:
-      - "db-sandbox:pgsql-server"
+      - db-sandbox
     networks:
       - default
 
 volumes:
-  db-data:
-  pgadmin-data:
+  mysql-data:
 
 networks:
   default:
