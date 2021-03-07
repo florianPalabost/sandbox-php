@@ -23,5 +23,10 @@ down:
 ps:
 	$(DOCKER_COMPOSE) ps
 
+# exec php container commands
 php:
 	$(PHP_EXEC) php $(COMMAND_ARGS)
+
+# exec composer commands inside php container
+composer:
+	$(PHP_EXEC) composer $(COMMAND_ARGS)
