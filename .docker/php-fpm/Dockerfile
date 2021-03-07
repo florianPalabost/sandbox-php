@@ -3,7 +3,7 @@ FROM php:8.0.1-fpm-alpine3.12
 ARG WITH_XDEBUG=false
 
 RUN apk update && apk --no-cache add postgresql-dev $PHPIZE_DEPS
-RUN docker-php-ext-install pdo pdo_pgsql
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
