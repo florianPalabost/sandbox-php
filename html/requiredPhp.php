@@ -12,7 +12,10 @@ foreach ($repRessources as $file) {
     if (in_array($file, $skipFiles)) continue;
 
     try {
-        require_once('sandbox/' . $file);
+        if (file_exists('sandbox/' . $file)) {
+            require_once('sandbox/' . $file);
+        }
+
     }
     catch (Exception $e) {
         echo '[REQUIRED FILES ERROR]' . $e->getMessage() . "\n";

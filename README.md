@@ -8,7 +8,7 @@
 
 ## Install 
 ````
-make install
+make install sgbd=<postgres||mysql>
 # play in /html folder
 ````
 

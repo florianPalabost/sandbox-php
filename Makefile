@@ -4,11 +4,17 @@ PHP_EXEC := $(DOCKER_COMPOSE) exec -w /var/www/html app-php
 COMMAND_ARGS := $(subst :,\:,$(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS)))
 
 
-# install
-install:
-	@echo "Check .env in .docker/db \n";
-	$(DOCKER_COMPOSE) up --build -d
-	@echo "You can play with the sandbox ! \n";
+## install
+install sgbd:
+ifeq "$(sgbd)" "mysql"
+	@echo "You choose MySQL as SGBD ! \n"
+	$(DOCKER_COMPOSE) -f docker-compose.postgres.yml down
+	$(DOCKER_COMPOSE) -f docker-compose.mysql.yml up --build -d
+else
+	@echo "You choose Postgres as SGBD ! \n"
+	$(DOCKER_COMPOSE) -f docker-compose.mysql.yml down
+	$(DOCKER_COMPOSE) -f docker-compose.postgres.yml up --build -d
+endif
 
 # Start
 start:
@@ -17,7 +23,8 @@ start:
 
 # Stop
 down:
-	$(DOCKER_COMPOSE) down
+	$(DOCKER_COMPOSE) -f docker-compose.mysql.yml down
+	$(DOCKER_COMPOSE) -f docker-compose.postgres.yml down
 
 # ps
 ps:
