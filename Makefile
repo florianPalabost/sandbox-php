@@ -1,34 +1,48 @@
+.PHONY: install
+
+
 DOCKER_COMPOSE := docker-compose
-PHP_EXEC := $(DOCKER_COMPOSE) exec -w /var/www/html app-php
+## ?= if not define
+SGBD?=postgres
+
+MYSQL_FILE := docker-compose.mysql.yml
+POSTGRES_FILE := docker-compose.postgres.yml
+
+PHP_EXEC := $(DOCKER_COMPOSE) -f $(POSTGRES_FILE) exec -w /var/www/html app-php
+
 # to use args like --unit use : " --unit"
 COMMAND_ARGS := $(subst :,\:,$(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS)))
 
 
 ## install
-install sgbd:
-ifeq "$(sgbd)" "mysql"
+install:
+ifeq "$(SGBD)" "mysql"
 	@echo "You choose MySQL as SGBD ! \n"
-	$(DOCKER_COMPOSE) -f docker-compose.postgres.yml down
-	$(DOCKER_COMPOSE) -f docker-compose.mysql.yml up --build -d
+	$(DOCKER_COMPOSE) -f $(POSTGRES_FILE) down --remove-orphans
+	$(DOCKER_COMPOSE) -f $(MYSQL_FILE) up --build -d
 else
 	@echo "You choose Postgres as SGBD ! \n"
-	$(DOCKER_COMPOSE) -f docker-compose.mysql.yml down
-	$(DOCKER_COMPOSE) -f docker-compose.postgres.yml up --build -d
+	$(DOCKER_COMPOSE) -f $(MYSQL_FILE) down --remove-orphans
+	$(DOCKER_COMPOSE) -f $(POSTGRES_FILE) up --build -d
 endif
 
 # Start
-start:
-	$(DOCKER_COMPOSE) down --rmi all
-	$(DOCKER_COMPOSE) up --build
+start: install
+	$(DOCKER_COMPOSE)  down --rmi all --remove-orphans
+	$(DOCKER_COMPOSE)  up --build
 
 # Stop
 down:
-	$(DOCKER_COMPOSE) -f docker-compose.mysql.yml down
-	$(DOCKER_COMPOSE) -f docker-compose.postgres.yml down
+	$(DOCKER_COMPOSE) -f $(MYSQL_FILE) down --remove-orphans
+	$(DOCKER_COMPOSE) -f $(POSTGRES_FILE) down --remove-orphans
 
 # ps
 ps:
-	$(DOCKER_COMPOSE) ps
+ifeq "$(SGBD)" "postgres"
+	$(DOCKER_COMPOSE) -f $(POSTGRES_FILE) ps
+else
+	$(DOCKER_COMPOSE) -f $(MYSQL_FILE) ps
+endif
 
 # exec php container commands
 php:
@@ -37,3 +51,6 @@ php:
 # exec composer commands inside php container
 composer:
 	$(PHP_EXEC) composer $(COMMAND_ARGS)
+
+test:
+	$(PHP_EXEC) composer_vendor/bin/phpunit tests
