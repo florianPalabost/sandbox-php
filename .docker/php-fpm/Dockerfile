@@ -17,13 +17,13 @@ RUN if [ ${INSTALL_XDEBUG} = true ]; then \
     # Install the xdebug extension
     pecl install xdebug && \
     docker-php-ext-enable xdebug; \
-		  echo "error_reporting = E_ALL" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
+		echo "error_reporting = E_ALL" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
 	    echo "display_startup_errors = On" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
 	    echo "display_errors = On" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
 	    echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
 fi;
 
-RUN ip -4 route list match 0/0 | awk '{print $3 "host.docker.internal"}' >> /etc/hosts
+# RUN ip -4 route list match 0/0 | awk '{print $3 "host.docker.internal"}' >> /etc/hosts
 
 # Copy xdebug configration for remote debugging
 # COPY .docker/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
