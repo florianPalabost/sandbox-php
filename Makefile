@@ -27,8 +27,8 @@ down:
 	$(DOCKER_COMPOSE) -f docker-compose.postgres.yml down
 
 # ps
-ps:
-	$(DOCKER_COMPOSE) ps
+ps sgbd:
+	$(DOCKER_COMPOSE) -f docker-compose.$(sgbd).yml ps -a
 
 # exec php container commands
 php:
